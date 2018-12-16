@@ -2,11 +2,13 @@ package com.example.mrozansk.weather;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
        lonTextView = (TextView) findViewById(R.id.lonTextView);
 
        cityTextView = (TextView) findViewById(R.id.cityTextView);
+
 
 
     }
@@ -130,13 +134,14 @@ public class MainActivity extends AppCompatActivity {
         return content;
     }
 
-
+     double lat;
+     double lon;
 
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            final double lat = (location.getLatitude());
-            final double lon = location.getLongitude();
+              lat = (location.getLatitude());
+              lon = location.getLongitude();
 
           //  System.out.println("LAT : "+ lat + " LON "+ lon);
             Log.d("tag", "LAT : "+ lat + " LON "+ lon);
@@ -232,5 +237,14 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
-    
+
+    public void showMap(View v){
+
+        Intent myIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("geo:"+lat+","+lon+"?z=14"));
+        Log.d("map", "LAT : "+ lat + " LON "+ lon);
+        startActivity(myIntent);
+
+    }
+
 }
