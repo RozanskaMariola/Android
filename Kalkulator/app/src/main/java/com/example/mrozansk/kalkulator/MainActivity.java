@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         n1EditText = (EditText) findViewById(R.id.n1EditText);
         n2EditText = (EditText) findViewById(R.id.n2EditText);
-        //n1 = Double.parseDouble(n1EditText.getText().toString());
-        //n2 = Double.parseDouble(n1EditText.getText().toString());
 
         resEditText = (EditText) findViewById(R.id.resEditText);
 
@@ -114,11 +113,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
     }
+
 
     @Override
     protected void onStart() {
@@ -134,6 +130,22 @@ public class MainActivity extends AppCompatActivity {
         if (mBound) {
             mBound = false;
             this.unbindService(logicConnection);
+        }
+    }
+
+
+    private class PiComputeTask extends AsyncTask<Void, Integer, Double> {
+        protected Double doInBackground(Void... voids) {
+         //
+            return 0.0;
+        }
+        protected void onPostExecute(Double result) {
+            //
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        //
         }
     }
 
