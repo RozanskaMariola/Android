@@ -13,15 +13,25 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    public static String OPENWEATHER_WEATHER_QUERY = "http://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&mode=html&appid=4526d487f12ef78b82b7a7d113faea64";
+
     TextView latTextView, lonTextView, cityTextView;
     WebView weatherWebView;
     
@@ -67,14 +77,20 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //updateWeather(lat,lon);
+                updateWeather(lat,lon);
             }
         }).start();
     };
 
-    /*
+
     private void updateWeather(double lat, double lon){
-        String weather = getContentFromUrl( "..." );
+       // String weather = getContentFromUrl( String.format(OPENWEATHER_WEATHER_QUERY, lat,lon) );
+       String addr = String.format(OPENWEATHER_WEATHER_QUERY, lat,lon);
+
+               Log.d("link", addr);
+
+        String weather = getContentFromUrl(addr);
+
         Message m = myHandler.obtainMessage();
         Bundle b = new Bundle();
         b.putString("lat", String.valueOf(lat));
@@ -83,7 +99,38 @@ public class MainActivity extends AppCompatActivity {
         m.setData(b);
         myHandler.sendMessage(m);
     }
-*/
+
+    // usage String.format(OPENWEATHER_WEATHER_QUERY, lat,lon)
+
+    public String getContentFromUrl(String addr) {
+        String content = null;
+
+        Log.v("[GEO WEATHER ACTIVITY]", addr);
+        HttpURLConnection urlConnection = null;
+        URL url = null;
+        try {
+            url = new URL(addr);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = null;
+            while ((line = in.readLine()) != null)
+            {
+                stringBuilder.append(line + "\n");
+            }
+            content = stringBuilder.toString();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(urlConnection!= null) urlConnection.disconnect();
+        }
+        return content;
+    }
+
+
 
     private final LocationListener locationListener = new LocationListener() {
         @Override
@@ -91,7 +138,16 @@ public class MainActivity extends AppCompatActivity {
             final double lat = (location.getLatitude());
             final double lon = location.getLongitude();
 
-//TODO
+          //  System.out.println("LAT : "+ lat + " LON "+ lon);
+            Log.d("tag", "LAT : "+ lat + " LON "+ lon);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    updateWeather(lat,lon);
+                }
+            }).start();
+
 
 
         }
@@ -111,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
 
 
     @Override
